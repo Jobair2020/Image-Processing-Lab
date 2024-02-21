@@ -205,24 +205,27 @@ def sobelFilter():
 
 
 # main
-print("Select the type of filter: ")
-print("1  Gaussian filter")
-print("2  Mean Filter")
-print("3  Laplacian Filter")
-print("4  LoG Filter")
-print("5  Sobel Filter")
+while(True):
+    print("Select the type of filter: ")
+    print("1  Gaussian filter")
+    print("2  Mean Filter")
+    print("3  Laplacian Filter")
+    print("4  LoG Filter")
+    print("5  Sobel Filter")
 
-choise = int(input())
-if choise == 1:
-    gaussianFilter()
-elif choise == 2:
-    meanFilter()
-elif choise == 3:
-    laplacianFilter()
-elif choise == 4:
-    laplacianOfGaussianFilter()
-else:
-    sobelFilter()
+    choise = int(input())
+    if choise == 1:
+        gaussianFilter()
+    elif choise == 2:
+        meanFilter()
+    elif choise == 3:
+        laplacianFilter()
+    elif choise == 4:
+        laplacianOfGaussianFilter()
+    else:
+        sobelFilter()
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+

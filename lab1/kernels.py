@@ -64,12 +64,12 @@ def sobel(horizontal=True):
 
 def laplacian_of_gaussian_kernel(size, sigma):
     kernel = np.zeros((size, size))
-    c = (1 / 2 * np.pi * sigma ** 2)
+    c = (1 / (2 * np.pi * sigma ** 2))
     size = size // 2
 
     for x in range(-size, size + 1):
         for y in range(-size, size + 1):
-            kernel[x + size, y + size] = np.exp(-((x * x) + (y * y)) / (2 * sigma ** 2))
+            kernel[x + size, y + size] = c * np.exp(-((x * x) + (y * y)) / (2 * sigma ** 2))
 
     gauss = kernel / np.sum(kernel)
 
