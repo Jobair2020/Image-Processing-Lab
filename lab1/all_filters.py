@@ -6,7 +6,7 @@ import math
 
 
 def gaussianFilter():
-    print("Select 1 for grayscale image 2 for color:")
+    print("Select 1 for grayscale image 2 for color 3 for hsv:")
     select = int(input())
     if select == 1:
         img = cv2.imread('Lena.jpg', cv2.IMREAD_GRAYSCALE)
@@ -22,9 +22,9 @@ def gaussianFilter():
         q = int(input())
         co.convolution("gaussian filter", kernel, img, p, q)
 
-    else:
+    elif select == 2:
         img = cv2.imread('Lena.jpg')
-        cv2.imshow("input",img)
+        cv2.imshow("input", img)
         b1, g1, r1 = cv2.split(img)
         print("Enter the height and weight for the kernel use odd value")
         height = int(input())
@@ -42,13 +42,39 @@ def gaussianFilter():
         r1 = co.convolution("red", kernel=kernel, img=r1, p=p, q=q)
         merged = cv2.merge((b1, g1, r1))
         cv2.imshow("gaussian filter", merged)
+    else:
+        img = cv2.imread('Lena.jpg')
+        cv2.imshow("input", img)
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+        b1, g1, r1 = cv2.split(img)
+        print("Enter the height and weight for the kernel use odd value")
+        height = int(input())
+        width = int(input())
+        print("Enter the sigma x and sigma y value respectively")
+        sigmaX = int(input())
+        sigmaY = int(input())
+        kernel = g.gaussian(height=height, width=width, sigmaX=sigmaX, sigmaY=sigmaY)
+        print('enter center index of kernel ')
+        p = int(input())
+        q = int(input())
 
+        b1 = co.convolution("blue", kernel=kernel, img=b1, p=p, q=q)
+        g1 = co.convolution("green", kernel=kernel, img=g1, p=p, q=q)
+        r1 = co.convolution("red", kernel=kernel, img=r1, p=p, q=q)
+        merged = cv2.merge((b1, g1, r1))
+        cv2.imshow("gaussian hsv", merged)
+        rgb = cv2.cvtColor(merged, cv2.COLOR_HSV2RGB)
+        cv2.imshow("gaussian rgb", rgb)
+        diff = rgb - merged
+        cv2.normalize(diff, diff, 0, 255, cv2.NORM_MINMAX)
+        diff = np.round(diff).astype(np.uint8)
+        cv2.imshow("difference", diff)
 
     return 0
 
 
 def meanFilter():
-    print("Select 1 for grayscale image 2 for color:")
+    print("Select 1 for grayscale image 2 for color 3 for hsv:")
     select = int(input())
     if select == 1:
         img = cv2.imread('noisy_image.jpg', cv2.IMREAD_GRAYSCALE)
@@ -62,7 +88,7 @@ def meanFilter():
         co.convolution("mean filter", kernel, img, p, q)
         cv2.waitKey(0)
 
-    else:
+    elif select == 2:
         img = cv2.imread('noisy_image.jpg')
         b1, g1, r1 = cv2.split(img)
         print("Enter the height and weight for the kernel use odd value")
@@ -79,6 +105,32 @@ def meanFilter():
         r1 = co.convolution("red", kernel=kernel, img=r1, p=p, q=q)
         merged = cv2.merge((b1, g1, r1))
         cv2.imshow("mean filter", merged)
+        cv2.waitKey(0)
+
+    else:
+        img = cv2.imread('noisy_image.jpg')
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+        b1, g1, r1 = cv2.split(img)
+        print("Enter the height and weight for the kernel use odd value")
+        height = int(input())
+        width = int(input())
+        kernel = g.mean(height=height, width=width)
+
+        print('enter center index of kernel ')
+        p = int(input())
+        q = int(input())
+
+        b1 = co.convolution("blue", kernel=kernel, img=b1, p=p, q=q)
+        g1 = co.convolution("green", kernel=kernel, img=g1, p=p, q=q)
+        r1 = co.convolution("red", kernel=kernel, img=r1, p=p, q=q)
+        merged = cv2.merge((b1, g1, r1))
+        cv2.imshow("mean filter", merged)
+        rgb = cv2.cvtColor(merged, cv2.COLOR_HSV2RGB)
+        cv2.imshow("mean rgb", rgb)
+        diff = rgb - merged
+        cv2.normalize(diff, diff, 0, 255, cv2.NORM_MINMAX)
+        diff = np.round(diff).astype(np.uint8)
+        cv2.imshow("difference", diff)
         cv2.waitKey(0)
 
     return 0
@@ -102,7 +154,7 @@ def laplacianFilter():
 
     else:
         img = cv2.imread('Lena.jpg')
-        cv2.imshow("input",img)
+        cv2.imshow("input", img)
         b1, g1, r1 = cv2.split(img)
         print("enter the size of kernel")
         size = int(input())
@@ -146,7 +198,7 @@ def laplacianOfGaussianFilter():
         print("enter the size of kernel")
         size = int(input())
         sigma = 1
-        kernel = g.laplacian_of_gaussian_kernel(size,sigma)
+        kernel = g.laplacian_of_gaussian_kernel(size, sigma)
 
         print('enter center index of kernel ')
         p = int(input())
@@ -196,7 +248,6 @@ def sobelFilter():
         merged = cv2.merge((b1, g1, r1))
         cv2.imshow("vertical merged", merged)
 
-
     # gradient_magnitude = np.sqrt(horizontal ** 2 + vertical ** 2)
     # img = np.clip(gradient_magnitude, 0, 255).astype(np.uint8)
     # cv2.imshow('combined image', img)
@@ -205,7 +256,7 @@ def sobelFilter():
 
 
 # main
-while(True):
+while (True):
     print("Select the type of filter: ")
     print("1  Gaussian filter")
     print("2  Mean Filter")
@@ -227,5 +278,3 @@ while(True):
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
-
