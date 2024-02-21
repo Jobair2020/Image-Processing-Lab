@@ -53,9 +53,27 @@ def laplacian(size=5, centcoff=True):
     return kernel
 
 
-def log(size=5):
-    kernel = np.zeros((size, size), dtype=int)
-    return kernel
+    def gaussian_kernel(sigma, size):
+        kernel = np.fromfunction(lambda x, y: (1 / (2 * np.pi * sigma ** 2)) * np.exp(
+            -((x - size // 2) ** 2 + (y - size // 2) ** 2) / (2 * sigma ** 2)), (size, size))
+        return kernel / np.sum(kernel)
+
+    def laplacian_of_gaussian(sigma, size):
+        # Create a 1D Laplacian kernel
+        laplacian_kernel_1d = np.array([1, -2, 1])
+
+        # Convolve the Laplacian kernel with the Gaussian kernel
+        gaussian_kernel_1d = gaussian_kernel(sigma, size)
+        laplacian_of_gaussian_1d = np.convolve(gaussian_kernel_1d, laplacian_kernel_1d, mode='same')
+
+        # Create the 2D Laplacian of Gaussian kernel
+        laplacian_of_gaussian_2d = np.outer(laplacian_of_gaussian_1d, laplacian_of_gaussian_1d)
+
+        print(laplacian_of_gaussian_2d)
+
+        return laplacian_of_gaussian_2d
+
+
 
 
 def sobel(h=True):
@@ -63,6 +81,16 @@ def sobel(h=True):
     kernel_v = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
     return kernel_h if h else kernel_v
 
-# mean()
+
+# Example usage
+    sigma = 1.4
+    size = 5  # Kernel size (odd)
+
+    # Create Laplacian of Gaussian kernel
+    log_kernel = laplacian_of_gaussian(sigma, size)
+    print("Laplacian of Gaussian Kernel:")
+    print(log_kernel)
+
+mean()
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()

@@ -4,11 +4,11 @@ import kernels as g
 
 
 def convolution(s, kernel, img, p, q):
-    k = (len(kernel)) // 2
-    l = kernel.shape[0] // 2
+    k = kernel.shape[0] // 2
+    l = kernel.shape[1] // 2
 
-    padding_bottom = len(kernel) - 1 - p
-    padding_right = len(kernel[0]) - 1 - q
+    padding_bottom = kernel.shape[0] - 1 - p
+    padding_right = kernel.shape[1] - 1 - q
 
     img_bordered = cv2.copyMakeBorder(src=img, top=p, bottom=padding_bottom, left=q, right=padding_right,
                                       borderType=cv2.BORDER_CONSTANT)
@@ -54,14 +54,14 @@ print(img)
 #                                [4, 5, 6],
 #                                [7, 8, 9]])
 
-# kernel = g.gaussian(7, 7, 2, 2)
-kernel = g.mean(7, 7)
+kernel =  g.gaussian(7, 7, 2, 2)
+# kernel = g.mean(7, 7)
 print(kernel)
 # center
 print('enter center for 5x5 kernel ')
 p = int(input())
 q = int(input())
-img = convolution("mean filter", kernel, img, p, q)
+# img = convolution("mean filter", kernel, img, p, q)
 
 b1 = convolution("blue", kernel=kernel, img=b1, p=p, q=q)
 g1 = convolution("green", kernel=kernel, img=g1, p=p, q=q)
