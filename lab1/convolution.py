@@ -3,7 +3,7 @@ import cv2
 import kernels as g
 
 
-def convolution(s, kernel, img, p, q):
+def convolution(s, kernel, img, p=2, q=2):
     k = kernel.shape[0] // 2
     l = kernel.shape[1] // 2
 
@@ -13,7 +13,7 @@ def convolution(s, kernel, img, p, q):
     img_bordered = cv2.copyMakeBorder(src=img, top=p, bottom=padding_bottom, left=q, right=padding_right,
                                       borderType=cv2.BORDER_CONSTANT)
     out = img_bordered.copy()
-    # cv2.imshow('bordered image', img_bordered)
+    cv2.imshow('bordered image', img_bordered)
 
     for i in range(p, img_bordered.shape[0] - padding_bottom - k):
         for j in range(q, img_bordered.shape[1] - padding_right - l):
@@ -32,45 +32,44 @@ def convolution(s, kernel, img, p, q):
     out = np.round(out).astype(np.uint8)
     print(f"normalized {out}")
     # crop image to original image
-    out = out[p: -padding_bottom, q:-padding_right]
+    # out = out[p: -padding_bottom, q:-padding_right]
     cv2.imshow(s, out)
     return out
 
 
-img = cv2.imread('Lena.jpg')
-# img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-cv2.imshow('input image', img)
-b1, g1, r1 = cv2.split(img)
-# merged = cv2.merge((b1, g1, r1))
-print(img)
-
-# kernel = (1 / 273) * np.array([[1, 4, 7, 4, 1],
-#                                [4, 16, 26, 16, 4],
-#                                [7, 26, 41, 26, 7],
-#                                [4, 16, 26, 16, 4],
-#                                [1, 4, 7, 4, 1]])
-
-# kernel = (1 / 45) * np.array([[1, 2, 3],
-#                                [4, 5, 6],
-#                                [7, 8, 9]])
-
-kernel =  g.gaussian(7, 7, 2, 2)
-# kernel = g.mean(7, 7)
-print(kernel)
-# center
-print('enter center for 5x5 kernel ')
-p = int(input())
-q = int(input())
-# img = convolution("mean filter", kernel, img, p, q)
-
-b1 = convolution("blue", kernel=kernel, img=b1, p=p, q=q)
-g1 = convolution("green", kernel=kernel, img=g1, p=p, q=q)
-r1 = convolution("red", kernel=kernel, img=r1, p=p, q=q)
-merged = cv2.merge((b1, g1, r1))
-
-# cv2.imshow("in hsv", merged)
-# merged = cv2.cvtColor(merged, cv2.COLOR_HSV2RGB)
-cv2.imshow("merged", merged)
-
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# main
+# img = cv2.imread('Lena.jpg')
+# # img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+# cv2.imshow('input image', img)
+# b1, g1, r1 = cv2.split(img)
+#
+# print(img)
+#
+# kernel_size = 7
+# sigma = 1.0
+#
+# # kernel = g.laplacian_of_gaussian_kernel(kernel_size, sigma)
+# # kernel = g.laplacian(kernel_size, True)
+# # kernel = g.mean(5,5)
+# kernel = g.sobel(False)
+#
+# # kernel = g.mean(7, 7)
+# print(kernel)
+# # center
+# print('enter center for 5x5 kernel ')
+# p = int(input())
+# q = int(input())
+# img = convolution("sobel", kernel, img, p=2, q=2)
+#
+# # for color image
+# b1 = convolution("blue", kernel=kernel, img=b1, p=p, q=q)
+# g1 = convolution("green", kernel=kernel, img=g1, p=p, q=q)
+# r1 = convolution("red", kernel=kernel, img=r1, p=p, q=q)
+# # merged = cv2.merge((b1, g1, r1))
+#
+# # cv2.imshow("in hsv", merged)
+# # merged = cv2.cvtColor(merged, cv2.COLOR_HSV2RGB)
+# # cv2.imshow("merged", merged)
+#
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()

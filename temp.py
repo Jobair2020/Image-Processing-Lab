@@ -11,6 +11,10 @@ cv2.imshow('input image', img)
 print(img)
 # print(img.max())
 # print(img.min())
+# kernel = (1 / 45) * np.array([[1, 2, 3],
+#                                [4, 5, 6],
+#                                [7, 8, 9]])
+
 
 kernel = (1 / 273) * np.array([[1, 4, 7, 4, 1],
                                [4, 16, 26, 16, 4],

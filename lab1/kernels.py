@@ -29,8 +29,10 @@ def gaussian(height=5, width=5, sigmaX=1, sigmaY=1):
 
             kernel[x + height, y + width] = "{:.4f}".format(g)
             sum += g
-            print(kernel[x + height, y + width], end=" ")
-        print()
+            # print(kernel[x + height, y + width], end=" ")
+        # print()
+
+    print(kernel / sum)
 
     return kernel / sum
 
@@ -39,6 +41,7 @@ def mean(height=5, width=6):
     kernel = np.ones((height, width), dtype=np.float32)
     kernel = kernel / (height * width)
 
+    print(kernel)
     return kernel
 
 
@@ -49,41 +52,35 @@ def laplacian(size=5, centcoff=True):
     center = size // 2
     kernel[center, center] = ((size * size) - 1) * (- coff)
 
+    print(kernel)
     return kernel
 
 
-def gaussian_kernel(sigma, size):
-    kernel = np.fromfunction(lambda x, y: (1 / (2 * np.pi * sigma ** 2)) * np.exp(
-        -((x - size // 2) ** 2 + (y - size // 2) ** 2) / (2 * sigma ** 2)), (size, size))
-    return kernel / np.sum(kernel)
-
-
-def laplacian_of_gaussian(sigma, size):
-    # a 1D Laplacian kernel
-    laplacian_kernel_1d = np.array([1, -2, 1])
-
-    # convolution the Laplacian kernel with the Gaussian kernel
-    gaussian_kernel_1d = gaussian_kernel(sigma, size)
-    laplacian_of_gaussian_1d = np.convolve(gaussian_kernel_1d, laplacian_kernel_1d, mode='same')
-
-    # the 2D Laplacian of Gaussian kernel
-    laplacian_of_gaussian_2d = np.outer(laplacian_of_gaussian_1d, laplacian_of_gaussian_1d)
-
-    return laplacian_of_gaussian_2d
-
-
-def sobel(h=True):
+def sobel(horizontal=True):
     kernel_h = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
     kernel_v = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
-    return kernel_h if h else kernel_v
+    return kernel_h if horizontal else kernel_v
 
-sigma = 1.4
-size = 5
 
-log_kernel = laplacian_of_gaussian(sigma, size)
-print("Laplacian of Gaussian Kernel:")
-print(log_kernel)
+def laplacian_of_gaussian_kernel(size, sigma):
+    kernel = np.zeros((size, size))
+    c = (1 / 2 * np.pi * sigma ** 2)
+    size = size // 2
 
-mean()
+    for x in range(-size, size + 1):
+        for y in range(-size, size + 1):
+            kernel[x + size, y + size] = np.exp(-((x * x) + (y * y)) / (2 * sigma ** 2))
+
+    gauss = kernel / np.sum(kernel)
+
+    for x in range(-size, size + 1):
+        for y in range(-size, size + 1):
+            kernel[x + size, y + size] = -1 * ((x * x) + (y * y) - (2 * sigma ** 2)) * gauss[x + size, y + size]
+
+    print(kernel)
+
+    return kernel
+
+# mean()
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
