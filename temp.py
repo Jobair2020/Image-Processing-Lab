@@ -49,5 +49,11 @@ out = np.round(out).astype(np.uint8)
 print(out)
 cv2.imshow('normalised output image', out)
 
+out = cv2.filter2D(src=img, ddepth=-1, kernel=kernel, borderType=cv2.BORDER_REPLICATE)
+flipped_kernel = np.flip(kernel, axis=(0, 1))
+# out = cv2.filter2D(img, -1, flipped_kernel, borderType=cv2.BORDER_REPLICATE)
+cv2.normalize(out, out, 0, 255, cv2.NORM_MINMAX)
+cv2.imshow("Actual", out)
+
 cv2.waitKey(0)
 cv2.destroyAllWindows()

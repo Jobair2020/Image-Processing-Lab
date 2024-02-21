@@ -1,5 +1,5 @@
 import numpy as np
-import cv2
+# import cv2
 import math
 
 
@@ -36,5 +36,33 @@ def gaussian(height=5, width=5, sigmaX=1, sigmaY=1):
     return kernel / sum
 
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+def mean(height=5, width=6):
+    kernel = np.ones((height, width), dtype=np.float32)
+    kernel = kernel / (height * width)
+
+    return kernel
+
+
+def laplacian(size=5, centcoff=True):
+    coff = 1 if centcoff else -1
+
+    kernel = np.ones((size, size), dtype=int) * coff
+    center = size // 2
+    kernel[center, center] = ((size * size) - 1) * (- coff)
+
+    return kernel
+
+
+def log(size=5):
+    kernel = np.zeros((size, size), dtype=int)
+    return kernel
+
+
+def sobel(h=True):
+    kernel_h = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
+    kernel_v = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
+    return kernel_h if h else kernel_v
+
+# mean()
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()

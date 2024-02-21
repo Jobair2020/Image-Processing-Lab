@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 
-img = cv2.imread('lena.jpg', cv2.IMREAD_GRAYSCALE)
+img = cv2.imread('lab1/Lena.jpg', cv2.IMREAD_GRAYSCALE)
 img_bordered = cv2.copyMakeBorder(src=img, top=25, bottom=25, left=25, right=25, borderType=cv2.BORDER_CONSTANT)
 cv2.imshow('grayscaled image', img)
 cv2.imshow('bordered image', img_bordered)
