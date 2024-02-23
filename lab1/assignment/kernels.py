@@ -1,6 +1,6 @@
 import numpy as np
-# import cv2
 import math
+
 
 # void cv::GaussianBlur(InputArray src,OutputArray dst,Size ksize,double sigmaX,double sigmaY = 0,int borderType = BORDER_DEFAULT)
 # blur = cv2.GaussianBlur(img,(5,5),1)
@@ -13,9 +13,10 @@ import math
 # out = cv2.filter2D(src=img, ddepth=-1, kernel=kernel)
 
 
-def gaussian(height=5, width=5, sigmaX=1, sigmaY=1):
-    # sigmaX = int(input())
-    # sigmaY = int(input())
+def gaussian(sigmaX=1, sigmaY=1):
+    # makes it odd
+    height = int(sigmaX * 7) | 1
+    width = int(sigmaY * 7) | 1
     kernel = np.zeros((height, width))
     height = height // 2
     width = width // 2

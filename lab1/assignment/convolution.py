@@ -1,6 +1,4 @@
-import numpy as np
 import cv2
-import kernels as g
 
 
 def convolution(s, kernel, img, p=2, q=2):
@@ -13,7 +11,6 @@ def convolution(s, kernel, img, p=2, q=2):
     img_bordered = cv2.copyMakeBorder(src=img, top=p, bottom=padding_bottom, left=q, right=padding_right,
                                       borderType=cv2.BORDER_CONSTANT)
     out = img_bordered.copy()
-    cv2.imshow('bordered image', img_bordered)
 
     for i in range(p, img_bordered.shape[0] - padding_bottom - k):
         for j in range(q, img_bordered.shape[1] - padding_right - l):
@@ -23,19 +20,10 @@ def convolution(s, kernel, img, p=2, q=2):
                     res += kernel[x + k, y + l] * img_bordered[i - x, j - y]
             out[i, j] = res
 
-    print(img_bordered.shape)
-    print(out.shape)
-
-    # cv2.imshow('output image', out)
-    # print(out)
-    cv2.normalize(out, out, 0, 255, cv2.NORM_MINMAX)
-    out = np.round(out).astype(np.uint8)
-    print(f"normalized {out}")
     # crop image to original image
     # out = out[p: -padding_bottom, q:-padding_right]
     cv2.imshow(s, out)
     return out
-
 
 # main
 # img = cv2.imread('Lena.jpg')
