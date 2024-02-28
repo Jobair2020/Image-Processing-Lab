@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-img = cv2.imread('lab1/assignment/Lena.jpg')
+img = cv2.imread('assignment/Lena.jpg')
 print(img.shape)
 
 # %%
