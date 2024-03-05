@@ -63,37 +63,45 @@ def derivative_y(kernel):
     print(new)
     return new
 
+def Thresholding(img_gray):
+    t = cv2.mean(img_gray)[0]  # Initial threshold estimate
+    t_new = 0  # Updated threshold value
+    epsilon = 0.001  # Threshold convergence criterion
 
-# todo
-def thresholding(img_gray):
-    # img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
-    t = cv2.mean(img_gray)[0]  # Mean pixel intensity
-    print(t)
-    count1 = 0
-    count2 = 0
-    mu1 = 0
-    mu2 = 0
-    t1 = 0
-    while ((t1 - t) > 0.001):
-        t1 = t
+    while abs(t_new - t) > epsilon:
+
+        mu1 = 0
+        mu2 = 0
+        count1 = 0
+        count2 = 0
+
+        # Update the threshold value
         for i in range(img_gray.shape[0]):
             for j in range(img_gray.shape[1]):
                 if img_gray[i, j] > t:
-                    count1 += 1
                     mu1 += img_gray[i, j]
+                    count1 += 1
                 else:
-                    count2 += 1
                     mu2 += img_gray[i, j]
-        t = ((mu1 / count1 + mu2 / count2) / 2)
+                    count2 += 1
+        t = t_new  # Update the threshold value for the next iteration
+        mu1 /= count1
+        mu2 /= count2
+        t_new = (mu1 + mu2) / 2
 
-    for i in range(img.shape[0]):
-        for j in range(img.shape[1]):
-            if (img[i, j] > t):
-                img[i, j] = 255
+        if abs(t_new - t) <= epsilon:
+            break
+
+    # Apply thresholding to the image
+    # ret, img_thresh = cv2.threshold(img_gray, t, 255, cv2.THRESH_BINARY)
+    for i in range(img_gray.shape[0]):
+        for j in range(img_gray.shape[1]):
+            if (img_gray[i, j] > t):
+                img_gray[i, j] = 255
             else:
-                img[i, j] = 0
+                img_gray[i, j] = 0
 
-    return img
+    return img_gray
 
 
 def normalize(out):
@@ -129,8 +137,8 @@ for i in range(border, img_bordered.shape[0] - border):
 
 cv2.imshow("magnitude", combined)
 
-# out = thresholding(combined)
-# cv2.imshow("thresholding", combined)
+out = Thresholding(combined)
+cv2.imshow("thresholding", out)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
