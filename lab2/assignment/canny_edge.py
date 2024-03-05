@@ -98,7 +98,7 @@ def non_maximum_suppression2(image, angle):
             else:
                 Z[i, j] = 0
 
-    return out
+    return Z
 
 
 # main
@@ -125,7 +125,7 @@ angle = np.arctan2(Gy, Gx) * 180 / np.pi
 cv2.imshow("magnitude", normalize(mag))
 cv2.imshow("angel", normalize(angle))
 
-nomaxsup = non_maximum_suppression(mag, angle)
+nomaxsup = non_maximum_suppression2(mag, angle)
 
 cv2.imshow("non maximum suppression", normalize(nomaxsup))
 
