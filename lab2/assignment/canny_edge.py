@@ -66,55 +66,17 @@ def non_maximum_suppression(image, angle):
     return out
 
 
-def non_maximum_suppression2(image, angle):
-    M, N = image.shape
-    Z = np.zeros((M, N), dtype=np.int32)  # resultant image
-    # angle = theta * 180. / np.pi  # max -> 180, min -> -180
-    angle[angle < 0] += 180  # max -> 180, min -> 0
-
-    for i in range(1, M - 1):
-        for j in range(1, N - 1):
-            q = 255
-            r = 255
-
-            if (0 <= angle[i, j] < 22.5) or (157.5 <= angle[i, j] <= 180):
-                r = image[i, j - 1]
-                q = image[i, j + 1]
-
-            elif (22.5 <= angle[i, j] < 67.5):
-                r = image[i - 1, j + 1]
-                q = image[i + 1, j - 1]
-
-            elif (67.5 <= angle[i, j] < 112.5):
-                r = image[i - 1, j]
-                q = image[i + 1, j]
-
-            elif (112.5 <= angle[i, j] < 157.5):
-                r = image[i + 1, j + 1]
-                q = image[i - 1, j - 1]
-
-            if (image[i, j] >= q) and (image[i, j] >= r):
-                Z[i, j] = image[i, j]
-            else:
-                Z[i, j] = 0
-
-    return Z
-
-
 # main
 img = cv2.imread('Lena.jpg', cv2.IMREAD_GRAYSCALE)
 sigma = 0.7
 
 kernel = k.gaussian(sigma)
-
 img_conv = convolution(img, kernel)
 
-kernel_x, kernel_y = k.get_kernel()
+# kernel_x, kernel_y = k.get_kernel()
 # kernel_x = k.derivative_x(kernel,sigma)
 # kernel_y = k.derivative_y(kernel,sigma)
-
-Gx = convolution(img_conv, kernel_x)
-Gy = convolution(img_conv, kernel_y)
+Gx, Gy = k.sobel(img_conv)
 
 Gx = convolution(Gx, kernel)
 Gy = convolution(Gy, kernel)
@@ -125,7 +87,7 @@ angle = np.arctan2(Gy, Gx) * 180 / np.pi
 cv2.imshow("magnitude", normalize(mag))
 cv2.imshow("angel", normalize(angle))
 
-nomaxsup = non_maximum_suppression2(mag, angle)
+nomaxsup = non_maximum_suppression(mag, angle)
 
 cv2.imshow("non maximum suppression", normalize(nomaxsup))
 

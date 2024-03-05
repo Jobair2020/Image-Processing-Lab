@@ -41,10 +41,10 @@ def derivative_y(kernel, sigma):
     return new
 
 
-def sobel():
-    kernel_x = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]])
-    kernel_y = np.array([[-1, -2, -1], [0, 0, 0], [1, 2, 1]])
-    return (kernel_x, kernel_y)
+def sobel(img):
+    Gx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
+    Gy = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)
+    return (Gx, Gy)
 
 
 def get_kernel():
@@ -120,7 +120,7 @@ def threshold(img, lowThresholdRatio=0.05, highThresholdRatio=0.09):
     '''
     Double threshold
     '''
-    #global threshold value use korche.
+    # t = globalThresholding(img)
     highThreshold = img.max() * highThresholdRatio
     lowThreshold = highThreshold * lowThresholdRatio
 
