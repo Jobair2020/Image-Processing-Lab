@@ -47,41 +47,37 @@ def sobel(img):
     return (Gx, Gy)
 
 
-def get_kernel():
-    sigma = 0.7
-    kernel = gaussian(sigma)
-
-    h = len(kernel)
-
-    kernel_x = np.zeros((h, h))
-    kernel_y = np.zeros((h, h))
-
-    mn1 = 100
-    mn2 = 100
-
-    cx = h // 2
-    for x in range(h):
-        for y in range(h):
-
-            act_x = (x - cx)
-            act_y = (y - cx)
-
-            c1 = -act_x / (sigma ** 2)
-            c2 = -act_y / (sigma ** 2)
-
-            kernel_x[x, y] = c1 * kernel[x, y]
-            kernel_y[x, y] = c2 * kernel[x, y]
-
-            if kernel_x[x, y] != 0:
-                mn1 = min(abs(kernel_x[x, y]), mn1)
-
-            if kernel_y[x, y] != 0:
-                mn2 = min(abs(kernel_y[x, y]), mn2)
-
-    dr1 = (kernel_x / mn1).astype(int)
-    dr2 = (kernel_y / mn2).astype(int)
-
-    return (kernel_y, kernel_x)
+# def get_kernel():
+#     sigma = 0.7
+#     kernel = gaussian(sigma)
+#     h = len(kernel)
+#     kernel_x = np.zeros((h, h))
+#     kernel_y = np.zeros((h, h))
+#     mn1 = 100
+#     mn2 = 100
+#     cx = h // 2
+#     for x in range(h):
+#         for y in range(h):
+#
+#             act_x = (x - cx)
+#             act_y = (y - cx)
+#
+#             c1 = -act_x / (sigma ** 2)
+#             c2 = -act_y / (sigma ** 2)
+#
+#             kernel_x[x, y] = c1 * kernel[x, y]
+#             kernel_y[x, y] = c2 * kernel[x, y]
+#
+#             if kernel_x[x, y] != 0:
+#                 mn1 = min(abs(kernel_x[x, y]), mn1)
+#
+#             if kernel_y[x, y] != 0:
+#                 mn2 = min(abs(kernel_y[x, y]), mn2)
+#
+#     dr1 = (kernel_x / mn1).astype(int)
+#     dr2 = (kernel_y / mn2).astype(int)
+#
+#     return (kernel_y, kernel_x)
 
 
 def globalThresholding(img_gray):

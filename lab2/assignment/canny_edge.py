@@ -68,6 +68,7 @@ def non_maximum_suppression(image, angle):
 
 # main
 img = cv2.imread('Lena.jpg', cv2.IMREAD_GRAYSCALE)
+
 sigma = 0.7
 
 kernel = k.gaussian(sigma)
@@ -83,6 +84,9 @@ Gy = convolution(Gy, kernel)
 
 mag = np.sqrt(Gx ** 2 + Gy ** 2)
 angle = np.arctan2(Gy, Gx) * 180 / np.pi
+
+cv2.imshow("input image",img)
+cv2.imshow("convoluted",normalize(img_conv))
 
 cv2.imshow("magnitude", normalize(mag))
 cv2.imshow("angel", normalize(angle))
