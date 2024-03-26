@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+
 def histogram_equalization(image):
     # histogram = cv2.calcHist([image], [0], None, [256], [0, 256])
 
@@ -20,8 +21,9 @@ def histogram_equalization(image):
     pdf = np.zeros(256, dtype=np.float32)
     m, n = image.shape
     size = m * n
-    for i in range(0, 256):
-        pdf[i] = histogram[i] / size
+    # for i in range(0, 256):
+    #     pdf[i] = histogram[i] / size
+    pdf = histogram / size
 
     plt.figure(2)
     plt.title("PDF")
@@ -36,6 +38,7 @@ def histogram_equalization(image):
     for i in range(1, 256):
         cdf[i] = round(cdf[i] * 255)
 
+
     plt.figure(3)
     plt.title("CDF")
     plt.plot(cdf)
@@ -46,8 +49,11 @@ def histogram_equalization(image):
         for j in range(image.shape[1]):
             equalized_image[i, j] = cdf[image[i, j]]
 
+    cv2.imshow('Original Image', image)
+    cv2.imshow('Equalized Image', equalized_image)
+
     # equalized_image = np.uint8(equalized_image)
-    histogram = cv2.calcHist(equalized_image, [0], None, [256], [0, 256])
+    # histogram = cv2.calcHist(equalized_image, [0], None, [256], [0, 256])
     histogram = np.zeros(256, dtype=np.uint32)
     for i in range(image.shape[0]):
         for j in range(image.shape[1]):
@@ -59,14 +65,14 @@ def histogram_equalization(image):
     plt.plot(histogram)
     plt.show()
 
-    cv2.imshow('Original Image', image)
-    cv2.imshow('Equalized Image', equalized_image)
+
 
     pdf = np.zeros(256, dtype=np.float32)
     m, n = image.shape
     size = m * n
-    for i in range(0, 256):
-        pdf[i] = histogram[i] / size
+    # for i in range(0, 256):
+    #     pdf[i] = histogram[i] / size
+    pdf = histogram / size
 
     plt.figure(5)
     plt.title("PDF")
@@ -78,8 +84,9 @@ def histogram_equalization(image):
     for i in range(1, 256):
         cdf[i] = cdf[i - 1] + pdf[i]
 
-    for i in range(1, 256):
+    for i in range(0, 256):
         cdf[i] = round(cdf[i] * 255)
+
 
     plt.figure(6)
     plt.title("CDF")

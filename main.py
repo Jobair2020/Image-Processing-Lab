@@ -1,143 +1,129 @@
-import numpy as np
 import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 import math
 
+def find(target, input):
+    diff = target - input
+    mask = np.ma.less_equal(diff, 0)
 
-# img = cv2.imread('lab1/box.jpg', cv2.IMREAD_GRAYSCALE)
-# img_bordered = cv2.copyMakeBorder(src=img, top=2, bottom=2, left=2, right=2, borderType=cv2.BORDER_CONSTANT)
-# cv2.imshow('grayscaled image', img)
-# # cv2.imshow('bordered image', img_bordered)
-# out = img.copy()
-# out = np.zeros((512,512)) #, dtype=np.uint8)
-# print(img.max())
-# print(img.min())
+    if np.all(mask):
+        c = np.abs(diff).argmin()
+        return c
+    masked_diff = np.ma.masked_array(diff, mask)
+    return masked_diff.argmin()
 
-# kernel = (1 / 273) * np.array([[1, 4, 7, 4, 1],
-#                                [4, 16, 26, 16, 4],
-#                                [7, 26, 41, 26, 7],
-#                                [4, 16, 26, 16, 4],
-#                                [1, 4, 7, 4, 1]])
+# Step 1: Generate the target histogram using the double Gaussian distribution
+x = 256  # Number of bins
+mu1, sigma1 = 50, 10  # Parameters for the first Gaussian
+mu2, sigma2 = 200, 20  # Parameters for the second Gaussian
 
+# Generate values for x-axis
+x_values = np.arange(0, x, 1)
 
-def gaussian(sigma=0.7, n=7):
-    c = 1 / (2 * 3.1416 * sigma ** 2)
-    kernel = np.zeros((n, n))
-    n = n // 2
-    total = 0
+# Calculate the double Gaussian distribution
+gaussian1 = (1 / (np.sqrt(2 * np.pi) * sigma1)) * np.exp(-((x_values - mu1) ** 2) / (2 * sigma1 ** 2))
+gaussian2 = (1 / (np.sqrt(2 * np.pi) * sigma2)) * np.exp(-((x_values - mu2) ** 2) / (2 * sigma2 ** 2))
+target_histogram = gaussian1 + gaussian2
 
-    for i in range(-n, n + 1):
-        for j in range(-n, n + 1):
-            p = -(i * i + j * j) / (2.0 * sigma ** 2)
-            g = c * math.exp(p)
-            kernel[i + n][j + n] = g
-            total += g
-    return kernel / total
+# Normalize the histogram
+target_histogram /= np.sum(target_histogram)
 
+# Step 2: Apply histogram matching to update the histogram of the input grayscale image
+img = cv2.imread('histogram.jpg', cv2.IMREAD_GRAYSCALE)
 
-def convolution(img, kernel):
-    n = (kernel.shape[0] // 2)
-    row = img.shape[0]
-    col = img.shape[1]
-    out = np.zeros((row, col))
+# Calculate input histogram
+histogram, _ = np.histogram(img.flatten(), 256, [0, 256])
+pdf = histogram / float(img.shape[0] * img.shape[1])
 
-    for i in range(n, row - n):
-        for j in range(n, col - n):
-            res = 0
-            for x in range(-n, n):
-                for y in range(-n, n):
-                    res += kernel[x + n, y + n] * img.item(i - x, j - y)
-            out[i, j] = res
+# Calculate CDF of input image
+cdf = np.cumsum(pdf) * 255
 
-    print(out)
-    # cv2.imshow('normalised output image', out)
-    return out
+# Calculate CDF of target histogram
+target_cdf = np.cumsum(target_histogram) * 255
 
+# Match histograms
+output_cdf = np.zeros(256)
+for i in range(256):
+    output_cdf[i] = find(target_cdf, cdf[i])
 
-def derivative_x(kernel):
-    n = kernel.shape[0] // 2
-    new = np.zeros((kernel.shape[0], kernel.shape[1]))
-    for i in range(-n, n + 1):
-        for j in range(-n, n + 1):
-            x = (kernel[i + n, j + n] * i) / (sigma ** 2)
-            new[i + n, j + n] = x
+# Apply histogram matching
+output = output_cdf[img]
+output = output.astype(np.uint8)
 
-    return new
+# Step 3: Show input and output images
+plt.figure(figsize=(15, 10))
 
+# Plot input histogram, PDF, and CDF
+plt.subplot(3, 3, 1)
+plt.plot(histogram, color='blue')
+plt.title('Input Histogram')
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Frequency')
+plt.grid(True)
 
-def derivative_y(kernel):
-    n = kernel.shape[0] // 2
-    new = np.zeros((kernel.shape[0], kernel.shape[1]))
-    for i in range(-n, n + 1):
-        for j in range(-n, n + 1):
-            x = (kernel[i + n, j + n] * j) / (sigma ** 2)
-            new[i + n, j + n] = x
-    print(new)
-    return new
+plt.subplot(3, 3, 2)
+plt.plot(pdf, color='green')
+plt.title('Input PDF')
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Probability')
+plt.grid(True)
 
+plt.subplot(3, 3, 3)
+plt.plot(cdf, color='red')
+plt.title('Input CDF')
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Cumulative Probability')
+plt.grid(True)
 
-def theholding(img):
-    t = cv2.mean(img)
-    count1 = 0
-    count2 = 0
-    mu1 = 0
-    mu2 = 0
-    t1 = t
-    while (t1 != t):
-        t1 = t
-        for i in range(img.shape[0]):
-            for j in range(img.shape[1]):
-                if img[i, j] > t:
-                    count1 = count1 + 1
-                    mu1 += img[i, j]
-                else:
-                    count2 = count2 + 1
-                    mu2 += img[i, j]
-        t = (mu1 + mu2) / 2
+# Plot target histogram
+plt.subplot(3, 3, 4)
+plt.plot(target_histogram, color='blue')
+plt.title('Target Histogram')
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Probability')
+plt.grid(True)
 
-    for i in range(img.shape[0]):
-        for j in range(img.shape[1]):
-            if img[i,j] > t:
-                img[i, j] = 255
-            else:
-                img[i, j] = 0
+# Show input image
+plt.subplot(3, 3, 5)
+plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+plt.title('Input Image')
+plt.axis('off')
 
-    return img
+# Show output image
+plt.subplot(3, 3, 6)
+plt.imshow(cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
+plt.title('Output Image')
+plt.axis('off')
 
+# Plot histogram of output image
+plt.subplot(3, 3, 7)
+plt.hist(output.flatten(), 256, [0, 256], color='blue')
+plt.title('Histogram of Output Image')
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Frequency')
+plt.grid(True)
 
-def normalize(out):
-    cv2.normalize(out, out, 0, 255, cv2.NORM_MINMAX)
-    out = np.round(out).astype(np.uint8)
-    return out
+# Calculate output histogram, PDF, and CDF
+output_histogram, _ = np.histogram(output.flatten(), 256, [0, 256])
+output_pdf = output_histogram / float(img.shape[0] * img.shape[1])
+output_cdf = np.cumsum(output_pdf) * 255
 
+# Plot output PDF and CDF
+plt.subplot(3, 3, 8)
+plt.plot(output_pdf, color='green')
+plt.title('Output PDF')
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Probability')
+plt.grid(True)
 
-# main
-img = cv2.imread('lab1\Lena.jpg', cv2.IMREAD_GRAYSCALE)
-size = 7
-sigma = 0.7
-kernel = gaussian(sigma, size)
-border = size // 2
-img_bordered = cv2.copyMakeBorder(src=img, top=border, bottom=border, left=border, right=border,
-                                  borderType=cv2.BORDER_CONSTANT)
+plt.subplot(3, 3, 9)
+plt.plot(output_cdf, color='red')
+plt.title('Output CDF')
+plt.xlabel('Pixel Intensity')
+plt.ylabel('Cumulative Probability')
+plt.grid(True)
 
-kernel_x = derivative_x(kernel)
-out1 = convolution(img_bordered, kernel_x)
-out = normalize(out1)
-cv2.imshow("x derivative", out)
-kernel_y = derivative_y(kernel)
-out2 = convolution(img_bordered, kernel_y)
-out = normalize(out2)
-cv2.imshow("y derivative", out)
-
-combined = img_bordered.copy()
-for i in range(border, img_bordered.shape[0] - border):
-    for j in range(border, img_bordered.shape[1] - border):
-        val = math.sqrt(out1[i, j] ** 2 + out2[i, j] ** 2)
-        combined[i, j] = val
-
-
-out = normalize(combined)
-cv2.imshow("magnitude", out)
-# out = theholding(combined)
-
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# Show all plots
+plt.tight_layout()
+plt.show()

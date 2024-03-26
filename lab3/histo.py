@@ -9,13 +9,9 @@ cv2.imshow("input",img)
 #cv2.calcHist(images, channels, mask, histSize, ranges[, hist[, accumulate]])
 histr = cv2.calcHist([img],[0],None,[256],[0,256])
 
-histogram = np.zeros(256, dtype=np.uint32)
-for i in range(image.shape[0]):
-    for j in range(image.shape[1]):
-        pixel = image[i, j]
-        histogram[pixel] += 1
+
 plt.figure(1)
-plt.plot(his)
+plt.plot(histr)
 plt.show()
 
 #plt.figure(figsize=(10, 4))
