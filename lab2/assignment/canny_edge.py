@@ -67,7 +67,7 @@ def non_maximum_suppression(image, angle):
 
 
 # main
-img = cv2.imread('Lena.jpg', cv2.IMREAD_GRAYSCALE)
+img = cv2.imread('face.jpeg', cv2.IMREAD_GRAYSCALE)
 
 sigma = 0.7
 
